@@ -10,4 +10,7 @@ public class Module extends SubsystemBase {
     public Module(int ID) {
         talon = new TalonSRX(ID);
     }
+
+    // public int setCurrentLimit(int limit) {
+    // }
 }

@@ -1,23 +1,30 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Command.Move;
 import frc.robot.Command.SetSpeed;
 import frc.robot.Systems.*;
 
 public class RobotContainer {
   Constants constants = new Constants();
   Drive drive = new Drive(constants.xID1, constants.xID2, constants.yID1, constants.yID2);
-  XboxController xboxCtrl = new XboxController(0);
+  CommandXboxController xboxCtrl = new CommandXboxController(0);
   SetSpeed setSpeed = new SetSpeed(drive, xboxCtrl);
+
+  VikingElevator vikingEl = new VikingElevator(13);
+  Move move = new Move(vikingEl);
 
   public RobotContainer() {
     configureBindings();
   }
+  
 
   private void configureBindings() {
     drive.setDefaultCommand(setSpeed);
+    
+    xboxCtrl.x().whileTrue(move);
   }
 
   public Command getAutonomousCommand() {
