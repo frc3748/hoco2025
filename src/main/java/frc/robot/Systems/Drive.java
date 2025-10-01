@@ -38,6 +38,6 @@ public class Drive extends SubsystemBase {
 
     public void runDrive(double x, double y) {
         xModules.get(0).talon.set(ControlMode.PercentOutput, x);
-        yModules.get(0).talon.set(ControlMode.PercentOutput, y);
+        yModules.get(0).talon.set(ControlMode.PercentOutput, -y);
     }
 }

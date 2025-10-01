@@ -8,9 +8,9 @@ public class VikingElevator extends SubsystemBase {
     Module module;
 
     public VikingElevator(int ID) {
-       module = new Module(ID);
+        module = new Module(ID);
 
-    //    dr
+        module.setCurrentLimit(30);
     }
 
     public void moveMotor(double speed) {

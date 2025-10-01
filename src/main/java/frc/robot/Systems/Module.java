@@ -11,6 +11,8 @@ public class Module extends SubsystemBase {
         talon = new TalonSRX(ID);
     }
 
-    // public int setCurrentLimit(int limit) {
-    // }
+    public void setCurrentLimit(int limit) {
+        talon.configContinuousCurrentLimit(limit);
+        talon.configPeakCurrentLimit(limit);
+    }
 }

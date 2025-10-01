@@ -18,9 +18,12 @@ public class SetSpeed extends Command {
 
     @Override
     public void execute() {
-        double xSpeed = xboxCtrl.getLeftY() * -Constants.speedMultiplier;
-        double ySpeed = xboxCtrl.getRightY() * Constants.speedMultiplier;
+        double speed = xboxCtrl.getRawAxis(1) * -Constants.speedMultiplier;
+        double turn = xboxCtrl.getRawAxis(4) * Constants.speedMultiplier;
 
-        drive.runDrive(xSpeed, ySpeed);
+        double left = speed + turn;
+        double right = speed - turn;
+
+        drive.runDrive(left, right);
     }
 }
