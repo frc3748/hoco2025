@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Command.Move;
+import frc.robot.Command.MovePID;
 import frc.robot.Command.SetSpeed;
 import frc.robot.Systems.*;
 
@@ -16,6 +17,9 @@ public class RobotContainer {
   VikingElevator vikingEl = new VikingElevator(13);
   Move move = new Move(vikingEl);
 
+  VikingPID vikingPID = new VikingPID(17);
+  MovePID movePID = new MovePID(vikingPID, 20);
+
   public RobotContainer() {
     configureBindings();
   }
@@ -24,6 +28,7 @@ public class RobotContainer {
   private void configureBindings() {
     drive.setDefaultCommand(setSpeed);
     
+    xboxCtrl.a().onTrue(movePID);
     xboxCtrl.x().whileTrue(move);
   }
 
