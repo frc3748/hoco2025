@@ -37,13 +37,19 @@ public class VikingPID extends SubsystemBase {
             .positionConversionFactor(360);
         sparkConfig.closedLoop
             .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            .pid(0.1, 0, 0)
-            .outputRange(-0.1, 0.1);
+            .pid(0.001, 0, 0)
+            .outputRange(-0.1, 0.1)
+            .positionWrappingInputRange(0,360)
+            .positionWrappingEnabled(true);
 
         spark.configure(sparkConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public void MoveMotorPID(double degrees) {
         sparkPID.setReference(degrees, ControlType.kPosition);
+    }
+
+    public void SetPower(double power) {
+        spark.set(power);
     }
 }

@@ -18,15 +18,14 @@ public class RobotContainer {
   Move move = new Move(vikingEl);
 
   VikingPID vikingPID = new VikingPID(17);
-  MovePID movePID = new MovePID(vikingPID, 20);
+  MovePID movePID = new MovePID(vikingPID, 0.2);
 
   public RobotContainer() {
     configureBindings();
   }
   
-
   private void configureBindings() {
-    drive.setDefaultCommand(setSpeed);
+   drive.setDefaultCommand(setSpeed);
     
     xboxCtrl.a().onTrue(movePID);
     xboxCtrl.x().whileTrue(move);

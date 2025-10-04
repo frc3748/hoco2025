@@ -18,4 +18,9 @@ public class MovePID extends Command {
     public void execute() {
         vikingPID.MoveMotorPID(angle);
     }
+
+    @Override
+    public void end(boolean interrupted) {
+        vikingPID.SetPower(0);
+    }
 }
