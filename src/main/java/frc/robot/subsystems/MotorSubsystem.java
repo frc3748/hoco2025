@@ -13,66 +13,81 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorConstants;
+import java.util.function.DoubleSupplier;
 
-/**
- * A single brushless motor on a SparkMax. Hardware only -- the behavior lives in the commands under
- * frc.robot.commands.
- */
 public class MotorSubsystem extends SubsystemBase {
-  private final SparkMax m_motor;
-  private final SparkMaxConfig m_config;
-  private final RelativeEncoder m_encoder;
+  private final SparkMax motor;
+  private final SparkMaxConfig config;
+  private final RelativeEncoder encoder;
 
   public MotorSubsystem() {
-    m_motor = new SparkMax(MotorConstants.kMotorCANID, MotorType.kBrushless);
-    m_config = new SparkMaxConfig();
-    m_encoder = m_motor.getEncoder();
-    m_encoder.setPosition(0);
+    motor = new SparkMax(MotorConstants.kMotorCANID, MotorType.kBrushless);
+    config = new SparkMaxConfig();
+    encoder = motor.getEncoder();
+    encoder.setPosition(0);
 
-    // Inversion goes through the config, not setInverted() -- that is deprecated
-    // in REVLib 2025.
-    m_config
+    config
         .inverted(MotorConstants.kInverted)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(MotorConstants.kCurrentLimit);
 
-    m_motor.configure(m_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    m_motor.clearFaults();
+    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    motor.clearFaults();
 
     setName("Motor");
   }
 
-  /**
-   * Runs the motor at the given duty cycle.
-   *
-   * @param speed output in [-1, 1]; positive is forward.
-   */
   public void setSpeed(double speed) {
-    if (!Double.isFinite(speed)) {
-      stop();
-      return;
-    }
-    m_motor.set(MathUtil.clamp(speed, -1.0, 1.0));
+    motor.set(MathUtil.clamp(speed, -1.0, 1.0));
   }
 
   public void stop() {
-    m_motor.stopMotor();
+    motor.stopMotor();
   }
 
   public double getSpeed() {
-    return m_motor.get();
+    return motor.get();
   }
 
-  /** Motor rotations since startup (before any gearing). */
   public double getPosition() {
-    return m_encoder.getPosition();
+    return encoder.getPosition();
   }
 
-  /** Motor RPM. */
   public double getVelocity() {
-    return m_encoder.getVelocity();
+    return encoder.getVelocity();
+  }
+
+  public Command forwardCommand() {
+    return runSpeedCommand(MotorConstants.kForwardSpeed).withName("MotorForward");
+  }
+
+  public Command backwardCommand() {
+    return runSpeedCommand(-MotorConstants.kBackwardSpeed).withName("MotorBackward");
+  }
+
+  public Command runSpeedCommand(double speed) {
+    return startEnd(() -> setSpeed(speed), this::stop).withName("MotorRunSpeed");
+  }
+
+  public Command runSpeedCommand(DoubleSupplier speed) {
+    return run(() -> setSpeed(speed.getAsDouble()))
+        .finallyDo(interrupted -> stop())
+        .withName("MotorRunSupplier");
+  }
+
+  public Command stopCommand() {
+    return run(this::stop).withName("MotorStop");
+  }
+
+  public Command forwardForCommand(double seconds) {
+    return forwardCommand().withTimeout(seconds).withName("MotorForwardTimed");
+  }
+
+  public Command backwardForCommand(double seconds) {
+    return backwardCommand().withTimeout(seconds).withName("MotorBackwardTimed");
   }
 
   @Override
@@ -81,7 +96,7 @@ public class MotorSubsystem extends SubsystemBase {
     builder.addDoubleProperty("Output", this::getSpeed, null);
     builder.addDoubleProperty("Position", this::getPosition, null);
     builder.addDoubleProperty("Velocity", this::getVelocity, null);
-    builder.addDoubleProperty("Current", m_motor::getOutputCurrent, null);
-    builder.addDoubleProperty("Temperature", m_motor::getMotorTemperature, null);
+    builder.addDoubleProperty("Current", motor::getOutputCurrent, null);
+    builder.addDoubleProperty("Temperature", motor::getMotorTemperature, null);
   }
 }
