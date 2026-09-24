@@ -4,8 +4,15 @@
 
 package frc.robot;
 
-public final class Constants {
-  private Constants() {}
+public class Constants {
+  public int xID1 = 2;
+  public int xID2 = 5;
+  public int yID1 = 14;
+  public int yID2 = 17;
+
+  public int currentLimit = 5;
+
+  public static double speedMultiplier = 0.5;
 
   public static final class MotorConstants {
     private MotorConstants() {}

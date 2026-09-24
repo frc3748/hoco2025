@@ -10,9 +10,16 @@ import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
 public class RobotContainer {
+  private final Constants constants = new Constants();
+
+  private final Drive drive =
+      new Drive(constants.xID1, constants.xID2, constants.yID1, constants.yID2);
+
   private final MotorSubsystem motor = new MotorSubsystem();
 
-  private final CommandXboxController m_driverController = new CommandXboxController(0);
+  private final CommandXboxController xboxCtrl = new CommandXboxController(0);
+
+  private final SetSpeed setSpeed = new SetSpeed(drive, xboxCtrl);
 
   public RobotContainer() {
     configureBindings();
@@ -21,9 +28,11 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    drive.setDefaultCommand(setSpeed);
+
     motor.setDefaultCommand(new StopMotor(motor));
 
-    m_driverController.a().whileTrue(MoveMotor.forward(motor));
-    m_driverController.b().whileTrue(MoveMotor.backward(motor));
+    xboxCtrl.a().whileTrue(MoveMotor.forward(motor));
+    xboxCtrl.b().whileTrue(MoveMotor.backward(motor));
   }
 }
