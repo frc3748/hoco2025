@@ -19,16 +19,6 @@ public final class Constants {
     public static final double kForwardSpeed = 0.4;
     public static final double kBackwardSpeed = 0.4;
 
-    public static final double kManualSpeed = 0.6;
-
-    public static final double kDeadband = 0.1;
-
     public static final double kTimedMoveSeconds = 1.0;
-  }
-
-  public static final class OperatorConstants {
-    private OperatorConstants() {}
-
-    public static final int kDriverControllerPort = 0;
   }
 }

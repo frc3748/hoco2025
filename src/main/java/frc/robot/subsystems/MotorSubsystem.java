@@ -13,10 +13,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorConstants;
-import java.util.function.DoubleSupplier;
 
 public class MotorSubsystem extends SubsystemBase {
   private final SparkMax motor;
@@ -24,7 +22,11 @@ public class MotorSubsystem extends SubsystemBase {
   private final RelativeEncoder encoder;
 
   public MotorSubsystem() {
-    motor = new SparkMax(MotorConstants.kMotorCANID, MotorType.kBrushless);
+    this(MotorConstants.kMotorCANID);
+  }
+
+  public MotorSubsystem(int CANID) {
+    motor = new SparkMax(CANID, MotorType.kBrushless);
     config = new SparkMaxConfig();
     encoder = motor.getEncoder();
     encoder.setPosition(0);
@@ -41,6 +43,10 @@ public class MotorSubsystem extends SubsystemBase {
   }
 
   public void setSpeed(double speed) {
+    if (!Double.isFinite(speed)) {
+      stop();
+      return;
+    }
     motor.set(MathUtil.clamp(speed, -1.0, 1.0));
   }
 
@@ -58,36 +64,6 @@ public class MotorSubsystem extends SubsystemBase {
 
   public double getVelocity() {
     return encoder.getVelocity();
-  }
-
-  public Command forwardCommand() {
-    return runSpeedCommand(MotorConstants.kForwardSpeed).withName("MotorForward");
-  }
-
-  public Command backwardCommand() {
-    return runSpeedCommand(-MotorConstants.kBackwardSpeed).withName("MotorBackward");
-  }
-
-  public Command runSpeedCommand(double speed) {
-    return startEnd(() -> setSpeed(speed), this::stop).withName("MotorRunSpeed");
-  }
-
-  public Command runSpeedCommand(DoubleSupplier speed) {
-    return run(() -> setSpeed(speed.getAsDouble()))
-        .finallyDo(interrupted -> stop())
-        .withName("MotorRunSupplier");
-  }
-
-  public Command stopCommand() {
-    return run(this::stop).withName("MotorStop");
-  }
-
-  public Command forwardForCommand(double seconds) {
-    return forwardCommand().withTimeout(seconds).withName("MotorForwardTimed");
-  }
-
-  public Command backwardForCommand(double seconds) {
-    return backwardCommand().withTimeout(seconds).withName("MotorBackwardTimed");
   }
 
   @Override
